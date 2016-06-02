@@ -1,43 +1,43 @@
-HA Watchdog / Router
-  REST communication between master and agent
-    REGISTER(routeName, nodeName, nodeAddress, fencingTag, agentUrl)
-      OK/DENY(reason)
-    PING(nodeName)
-      PONG(nodeName, nodeAddress, status, mode, targetMode)
-    START(nodeName)
-      OK/DENY(reason)
-    STOP(nodeName)
-      OK/DENY(reason)
-    SWITCH(nodeName, mode)
-      OK/DENY(reason)
-    CHECKFAILED(nodeName)
-      OK
-  Watchdog
-    master
-      periodically pings agent
-        no response
-          trigger change of routing and fencing
-    agent
-      must receive periodically PING from master
-        when not received
-          execute lostMasterAction - stop / switchMode
-      periodically checks the client (HTTP check, running process ID, ...)
-        not successful
-          sends CHECKFAILED to master
-          execute checkFailedAction - stop / switchMode
-  Router
-    listen on port, forwards to registered nodes (static node / dynamic node)
-    route
-      input port
-      routing algorithm
-      nodes
-        nodeName, nodeAddress, fencingTag
-        status: STOPPED, STARTING, STARTED, STOPPING, SWITCHING
-          changeTime
-          mode, targetMode
-        agentUrl
-    when received CHECKFAILED
-      change routing (mark node as NOT_AVAILABLE)
-      may use fencingTag to disable routing to all nodes with the same tag
-    maintenance
-      do not route to the node, but let it registered, do not send commands to the agent
+- HA Watchdog / Router
+  - REST communication between master and agent
+    - REGISTER(routeName, nodeName, nodeAddress, fencingTag, agentUrl)
+      - OK/DENY(reason)
+    - PING(nodeName)
+      - PONG(nodeName, nodeAddress, status, mode, targetMode)
+    - START(nodeName)
+      - OK/DENY(reason)
+    - STOP(nodeName)
+      - OK/DENY(reason)
+    - SWITCH(nodeName, mode)
+      - OK/DENY(reason)
+    - CHECKFAILED(nodeName)
+      - OK
+  - Watchdog
+    - master
+      - periodically pings agent
+        - no response
+          - trigger change of routing and fencing
+    - agent
+      - must receive periodically PING from master
+        - when not received
+          - execute lostMasterAction - stop / switchMode
+      - periodically checks the client (HTTP check, running process ID, ...)
+        - not successful
+          - sends CHECKFAILED to master
+          - execute checkFailedAction - stop / switchMode
+  - Router
+    - listen on port, forwards to registered nodes (static node / dynamic node)
+    - route
+      - input port
+      - routing algorithm
+      - nodes
+        - nodeName, nodeAddress, fencingTag
+        - status: STOPPED, STARTING, STARTED, STOPPING, SWITCHING
+          - changeTime
+        - mode, targetMode
+        - agentUrl
+    - when received CHECKFAILED
+      - change routing (mark node as NOT_AVAILABLE)
+      - may use fencingTag to disable routing to all nodes with the same tag
+    - maintenance
+      - do not route to the node, but let it registered, do not send commands to the agent
