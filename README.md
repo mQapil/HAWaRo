@@ -1,2 +1,2 @@
-# HAWaRo
+# hawaro
 HA Watchdog / Router
